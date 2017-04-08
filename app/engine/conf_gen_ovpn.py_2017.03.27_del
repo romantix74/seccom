@@ -1,0 +1,120 @@
+#!/usr/bin/python3
+import os
+
+out_dir = '/home/master/scripts/out_config'
+
+radius_secret = 'j13vTiuuaRKE3KCGq2xt'
+
+def generate_ovpn(s, i):
+    out_conf = []
+    out_conf.append('local {0}'.format(s))       
+    out_conf.append('management 127.0.0.1 115{0}'.format(i))
+    out_conf.append('port 443')
+    out_conf.append('proto {0}'.format(tcp_or_udp))
+    out_conf.append('dev tun1{0}'.format(i))
+    out_conf.append('ca ca.crt')
+    out_conf.append('cert server2.crt')
+    out_conf.append('key server2.key')
+    out_conf.append('dh dh2048.pem')
+    out_conf.append('server 10.1{0}.0.0 255.255.255.0'.format(i))
+    out_conf.append('push "route 10.1{0}.0.0 255.255.255.0"'.format(i))
+    out_conf.append('push "redirect-gateway def1"')
+    out_conf.append('push "dhcp-option DNS 8.8.8.8"')
+    out_conf.append('push "dhcp-option DNS 8.8.4.4"')
+    out_conf.append('#keepalive 10 120')
+    out_conf.append('ping 10')
+    out_conf.append('ping-exit 60')    
+    out_conf.append('#reneg-sec 0')
+    out_conf.append('tcp-queue-limit 256')
+    out_conf.append('tun-mtu 1500')
+    out_conf.append('comp-lzo')
+    out_conf.append('user nobody')
+    out_conf.append('group nogroup')
+    out_conf.append('persist-key')
+    out_conf.append('persist-tun')
+    out_conf.append('#status /etc/openvpn/log/openvpn-status{0}.log'.format(i))
+    out_conf.append('#log /etc/openvpn/log/openvpn{0}.log'.format(i))
+    out_conf.append('#verb 1')
+    out_conf.append('plugin /etc/openvpn/radiusplugin{0}.so /etc/openvpn/radiusplugin{1}.cnf'.format(i,i))
+    out_conf.append('push "block-outside-dns"')
+    out_conf.append('reneg-sec 43200')
+    out_conf.append('cipher AES-256-CBC')
+
+    return out_conf
+
+def generate( servers, tcp_or_udp = 'tcp'):    
+    print(tcp_or_udp)
+    # output config for single server ip
+    out_dict = {}
+    out_conf = []               # config for openvpn
+    out_conf_radplugin = []     # config for radiusplugin
+    for i,s in enumerate(servers):
+        print(s)
+        print('---in generate-----')
+        out_conf.append('local {0}'.format(s))       
+        out_conf.append('management 127.0.0.1 115{0}'.format(i))
+        out_conf.append('port 443')
+        out_conf.append('proto {0}'.format(tcp_or_udp))
+        out_conf.append('dev tun1{0}'.format(i))
+        out_conf.append('ca ca.crt')
+        out_conf.append('cert server2.crt')
+        out_conf.append('key server2.key')
+        out_conf.append('dh dh2048.pem')
+        out_conf.append('server 10.1{0}.0.0 255.255.255.0'.format(i))
+        out_conf.append('push "route 10.1{0}.0.0 255.255.255.0"'.format(i))
+        out_conf.append('push "redirect-gateway def1"')
+        out_conf.append('push "dhcp-option DNS 8.8.8.8"')
+        out_conf.append('push "dhcp-option DNS 8.8.4.4"')
+        out_conf.append('#keepalive 10 120')
+        out_conf.append('ping 10')
+        out_conf.append('ping-exit 60')    
+        out_conf.append('#reneg-sec 0')
+        out_conf.append('tcp-queue-limit 256')
+        out_conf.append('tun-mtu 1500')
+        out_conf.append('comp-lzo')
+        out_conf.append('user nobody')
+        out_conf.append('group nogroup')
+        out_conf.append('persist-key')
+        out_conf.append('persist-tun')
+        out_conf.append('#status /etc/openvpn/log/openvpn-status{0}.log'.format(i))
+        out_conf.append('#log /etc/openvpn/log/openvpn{0}.log'.format(i))
+        out_conf.append('#verb 1')
+        out_conf.append('plugin /etc/openvpn/radiusplugin{0}.so /etc/openvpn/radiusplugin{1}.cnf'.format(i,i))
+        out_conf.append('push "block-outside-dns"')
+        out_conf.append('reneg-sec 43200')
+        out_conf.append('cipher AES-256-CBC')
+        out_dict[s] = out_conf
+         
+        out_conf_radplugin.append('NAS-Identifier=OpenVpn')
+        out_conf_radplugin.append('Service-Type=5')
+        out_conf_radplugin.append('Framed-Protocol=1')
+        out_conf_radplugin.append('NAS-Port-Type=5')
+        out_conf_radplugin.append('NAS-IP-Address={0}'.format(s))
+        out_conf_radplugin.append('OpenVPNConfig=/etc/openvpn/openvpn{0}.conf'.format(i))
+        out_conf_radplugin.append('subnet=255.255.255.0')
+        out_conf_radplugin.append('overwriteccfiles=true')
+        out_conf_radplugin.append('nonfatalaccounting=false')
+        out_conf_radplugin.append('server')
+        out_conf_radplugin.append('{')
+        out_conf_radplugin.append('acctport=1813')
+        out_conf_radplugin.append('authport=1812')
+        out_conf_radplugin.append('name=88.198.246.49')
+        out_conf_radplugin.append('retry=3')
+        out_conf_radplugin.append('wait=3')
+        out_conf_radplugin.append('sharedsecret={0}'.format(radius_secret))
+        out_conf_radplugin.append('}')
+        out_dict['{}_radplugin'.format(s)] = out_conf_radplugin
+
+    return out_dict
+
+if __name__ == '__main__':
+    servers = ['1.2.3.4', '5.5.6.6']
+    
+    test_out = generate(servers , 'udp') 
+    print(test_out)
+    for key,row in test_out.items():
+        print(key)
+        print('--------------------')
+        for v in row:
+             print(v)
+      #  print(value)

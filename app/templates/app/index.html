@@ -1,0 +1,38 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+
+<!-- если пользователь авторизован , то выводим всю страницу -->
+{% if username  %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Всего клиентов: {{radwho_count}}</h2>
+        
+	<div class="">
+          <table class="table">
+	    <thead>
+	      <tr> 
+                <th>{{radwho_list_head.0}}</th> <th>{{radwho_list_head.1}}</th><th>{{radwho_list_head.2}}</th><th>{{radwho_list_head.3}}</th>
+                <th>{{radwho_list_head.4}}</th> <th>{{radwho_list_head.5}}</th><th>{{radwho_list_head.6}}</th><th>{{radwho_list_head.7}}</th>
+              </tr>
+            </thead>
+            <tbody>
+	      {% for row in radwho_list %}
+	        <tr> 
+                 <td> {{row.split.0}} </td> <td>{{row.split.1}}</td>  <td>{{row.split.2}}</td> <td>{{row.split.3}}</td> 
+	         <td>{{row.split.4}} {{row.split.5}} </td> <td> {{row.split.6}} </td> <td>{{row.split.7}}</td> <td>{{row.split.8}}</td> 
+               </tr>
+              {% endfor %}
+	    </tbody>
+          </table>
+        </div>
+	
+    </div>
+    
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<!-- если пользователь авторизован , то выводим всю страницу -->
+{% if username  %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Openvpn конфиг генератор</h2>
+        <section id="confGenForm">
+            <form action={% url 'config_generator' %} method="post" class="form-horizontal">
+                {% csrf_token %}
+                <h4>Input server ip </h4>
+                <hr />
+                <div class="form-group">
+                    <label for="id_confgen_servers" class="col-md-2 control-label">ip servers</label>
+                    <div class="col-md-10">
+                        {{ form.servers }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="id_confgen_netcard" class="col-md-2 control-label">network card</label>
+                    <div class="col-md-10">
+                        {{ form.net_card }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="hidden" name="next" value="/" />
+                        <input type="submit" value="Generate" class="btn btn-default" />
+                    </div>
+                </div>
+                {% if form.errors %}
+                <p class="validation-summary-errors">Please enter a correct user name and password.</p>
+                {% endif %}
+            </form>
+        </section>
+	
+	
+    </div>
+    
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        Введенные адреса: {{servers_ip}}  Сетевая карта: {{net_card}}
+   </div>   
+</div>
+<br/>
+<div class="row">
+    <div class="col-md-12">
+        <p>IPTABLES:</p>
+        {% for row in iptables %}                
+            <small>{{row}}</small></br>
+        {% endfor %}
+   </div>   
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <p>Summary:</p>
+        {% for row in summary_view %}                
+            <small>{{row}}</small></br>
+        {% endfor %}
+   </div>   
+</div>
+
+{% for conf_key, conf_value in configs.items %}
+    {% cycle  '<div class="row"><div class="col-md-12 col-sm-12"> ' '' '' '' %}    
+    <div class="col-md-3 col-sm-3">
+        <h4>{{ conf_key }}</h4>
+        
+            {% for row in conf_value %}
+                
+                <small>{{row}}</small></br>
+            {% endfor %}
+    </div>
+    {% cycle '' '' '' '</div></div>' %}
+    
+{% endfor %}    
+   
+
+{% endif %}
+{% endblock %}

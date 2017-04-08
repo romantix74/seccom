@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html >
+<head >
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Monitoring</title>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script>
+    
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap-datetimepicker.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}" />
+    
+    <script src="{% static 'app/scripts/bootstrap.js' %}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+    <script src="{% static 'app/scripts/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'app/scripts/main.js' %}"></script>
+    <script src="{% static 'app/scripts/app.js' %}"></script>
+</head>
+
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/" class="navbar-brand">Monitoring</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'mon_sql' %}">Current Ovpn users (sql)</a></li>
+                    <li><a href="{% url 'mon_sql_sum' %}">Sum sql query</a></li>
+                    <li><a href="{% url 'config_generator' %}">config generator</a></li>
+                </ul>
+                {% include 'app/loginpartial.html' %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid body-content">
+{% block content %}{% endblock %}
+        <hr/>
+        <footer>
+            <p>&copy; {{ year }} - Monitoring</p>
+        </footer>
+    </div>
+
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

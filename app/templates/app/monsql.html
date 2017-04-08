@@ -1,0 +1,37 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<!-- если пользователь авторизован , то выводим всю страницу -->
+{% if username  %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Всего клиентов: {{count_all}}</h2>
+        
+    	<div class="">
+        <table class="table">
+    	    <thead>
+    	      <tr> 
+                    <th>radacctid</th> <th>username</th><th>nasipaddress</th><th>acctstarttime</th>
+                    <th>acctstopttime</th>
+                  </tr>
+                </thead>
+                <tbody>
+    	      {% for row in out_sql %}
+    	        <tr> 
+                     <td> {{row.0}} </td> <td>{{row.1}}</td>  <td>{{row.2}}</td> <td>{{row.3}}</td> 
+    	         <td>{{row.4}}</td>  
+                   </tr>
+                  {% endfor %}
+    	    </tbody>
+        </table>
+      </div>
+	
+    </div>
+    
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+
+<!-- если пользователь авторизован , то выводим всю страницу -->
+{% if username  %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>SUM sql</h2>
+        <section id="sumSqlForm">
+            <form action={% url 'mon_sql_sum' %} method="post" class="form-horizontal">
+                {% csrf_token %}                
+                <hr />
+                <div class="form-group">
+                    <label for="id_sumsql_date" class="col-md-2 control-label">Date</label>
+                    <div class="col-md-10">
+                        {{ form.date_start }}  {{ form.date_end }}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="hidden" name="next" value="/" />
+                        <input type="submit" value="Generate" class="btn btn-default" />
+                    </div>
+                </div>
+                {% if form.errors %}
+                <p class="validation-summary-errors">Please enter a correct date.</p>
+                {% endif %}
+            </form>
+        </section>
+  
+  
+    </div>
+    
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Вывод таблицы для {{date_start}} и {{date_end}}: </h3>
+        <h3>Всего клиентов: {{count_all}}</h3>
+	<div class="">
+          <table class="table">
+	    <thead>
+	      <tr> 
+                <th>username</th><th>SUM-acctsessiontime в часах</th><th>SUM-acctinputoctets in Mb</th><th>SUM-acctoutputoctets in Mb</th>
+              </tr>
+            </thead>
+            <tbody>
+	      {% for row in out_sql %}
+	        <tr> 
+                 <td> {{row.0}} </td> <td>{{row.1}}</td>  <td>{{row.2}}</td> <td>{{row.3}}</td><td>{{row.4}}</td>  
+               </tr>
+              {% endfor %}
+	    </tbody>
+          </table>
+        </div>
+	
+    </div>
+    
+</div>
+
+{% endif %}
+
+{% endblock %}
